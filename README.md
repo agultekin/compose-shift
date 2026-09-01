@@ -27,5 +27,6 @@ It automatically inspects all running Docker Compose stacks across your system, 
 1. **Clone or Download the Repository:**
 
    ```bash
-   git clone [https://github.com/your-username/docker-switch.git](https://github.com/your-username/docker-switch.git)
+   git clone https://github.com/agultekin/compose-shift.git
    cd docker-switch
+   chmod a+x docker-switch.sh
