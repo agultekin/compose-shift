@@ -12,6 +12,7 @@ It automatically inspects all running Docker Compose stacks across your system, 
 - **Path-Independent Stack Detection:** Uses Docker labels (`com.docker.compose.project.config_files`) to find running Compose projects, regardless of directory location or branch switches.
 - **Fast State Switching:** Uses `docker compose stop` rather than `down`, preserving container state and volumes for instant context switching.
 - **Flexible Invocation:** Run it inside your target directory or pass any worktree path as an argument.
+- **Partial Launch** Run with the specific service after the folder precision then it will launch only selected docker compose service
 
 ---
 
@@ -30,3 +31,4 @@ It automatically inspects all running Docker Compose stacks across your system, 
    git clone https://github.com/agultekin/compose-shift.git
    cd docker-switch
    chmod a+x docker-switch.sh
+   ./docker-switch.sh [docker_compose_to_launch_folder] [specific_service_to_launch]
