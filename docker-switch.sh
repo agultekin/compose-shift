@@ -2,13 +2,15 @@
 # ==============================================================================
 # Script Name: docker-switch.sh
 # Description: Gracefully stops all active Docker Compose stacks on the system 
-#              and starts the Docker Compose stack in the specified directory.
-# Ideal for developers working with Git worktrees or multiple project branches.
+#              and starts specific service(s) or the whole stack in the target directory.
+# Usage:       ./docker-switch.sh [target_dir] [service1 service2 ...]
+# Examples:    ./docker-switch.sh ../my-project api
+#              ./docker-switch.sh . api database
+#              ./docker-switch.sh
 # ==============================================================================
 
 set -euo pipefail
 
-# Print styled log messages
 log_info() {
     echo -e "\033[0;34m[INFO]\033[0m $1"
 }
@@ -21,8 +23,10 @@ log_error() {
     echo -e "\033[0;31m[ERROR]\033[0m $1" >&2
 }
 
-# 1. Determine target directory (argument or current directory)
+# 1. Parse arguments: directory is first, remaining arguments are target services
 TARGET_DIR="${1:-.}"
+shift 1 2>/dev/null || true
+SERVICES=("$@")
 
 if [ ! -d "$TARGET_DIR" ]; then
     log_error "Target directory '$TARGET_DIR' does not exist."
@@ -55,8 +59,13 @@ fi
 cd "$TARGET_DIR"
 
 if [ -f "compose.yaml" ] || [ -f "compose.yml" ] || [ -f "docker-compose.yaml" ] || [ -f "docker-compose.yml" ]; then
-    log_info "Starting Docker Compose stack in: $TARGET_DIR"
-    docker compose up -d
+    if [ ${#SERVICES[@]} -gt 0 ]; then
+        log_info "Starting service(s) [${SERVICES[*]}] in: $TARGET_DIR"
+        docker compose up -d "${SERVICES[@]}"
+    else
+        log_info "Starting all services in: $TARGET_DIR"
+        docker compose up -d
+    fi
     log_success "Target environment is up and running!"
 else
     log_error "No valid Docker Compose file found in $TARGET_DIR"
